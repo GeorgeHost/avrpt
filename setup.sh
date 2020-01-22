@@ -98,6 +98,9 @@ else
     echo -e $WORK"  installing tool..."
     sudo cp ./avrpt /usr/bin/avrpt
     echo -e $DONE"OK"
+    echo -e $WORK"  installing used programs too..."
+    sudo apt-get install arduino-mk -y
+    sudo apt-get install screen -y
     exit 0
 fi
 exit
