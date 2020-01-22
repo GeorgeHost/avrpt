@@ -1,0 +1,52 @@
+  AVRPT CHANGELOG
+ =================
+
+ NAME:            AVR Project Tool
+
+ DESCRIPTION:     avrpt is organizing Arduino Uno Projects
+
+ AUTHOR:          George Host - ghost.mobilphone@gmail.com
+
+ DATE:            01-19-20	17.07.00
+
+ VERSION:         0.9.95
+
+ USAGE:           avrpt { -m | -h | -v } [project_name] { -c | -e | -r | -d | -f / -u }
+                  avrpt { --monitor | --help | --version } [project_name] { --create | --edit | --remove | --debug / --compile | --flash / --upload }
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+01-19-20.20:53:00   -   Ver 0.5.0   *begin programming AVR Project Tool as a Bash-Script
+                                     give the Tool a name: avr-pt
+
+01-20-20.00:00:00   -   Ver 0.5.1   *declare Options for the Syntax in Header
+                                    *update Version-number
+
+01-21-20.00:00:00   -   Ver 0.5.8   *Version-Option added
+
+01-21-20.00:00:00   -   Ver 0.5.9   *Routines added
+                                    *Name changed to: avrpt
+
+01-22-20.15:36:00   -   Ver 0.6.0   *fix Permission Problem
+                                    *cleanup root-Directory
+
+01-22-20.00:00:00   -   Ver 0.6.1   *Syntax-Check added
+
+01-22-20.00:00:00   -   Ver 0.6.2   *Debug-Option added
+                                    *Flash-Option added
+                                    *Monitor-Option added
+
+01-22-20.00:00:00   -   Ver 0.6.3   *Syntax ordering new sorted
+                                    *Help-Site added
+
+01-22-20.00:00:00   -   Ver 0.6.4   *Hardware-Check added
+
+01-22-20.00:00:00   -   Ver 0.6.5   *fix some problems
+                                    *test the Functions
+                                    *removed DEBUG-Messages
+
+01-22-20.15:55:15   -   Ver 0.9.95  *finally Version of avrpt finished, cleanup Directorys and
+                                     fillout the Documentation
+                                    *jump up to an sexy Version-number ;-)
+01-22-20.21:12:15   -   Ver 1.0.0   *setup.sh and remove.sh added
+                                    *make github.com repository

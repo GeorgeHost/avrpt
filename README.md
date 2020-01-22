@@ -27,9 +27,9 @@ Did not use this Program with Superuser(root) Permissions! It is organizing self
  
  AUTHOR:          George Host - ghost.mobilphone@gmail.com
  
- DATE:            01-22-20	16.55.00
+ DATE:            01-22-20	21.15.00
  
- VERSION:         0.9.95
+ VERSION:         1.0.0
 
  USAGE:           avrpt { -m | -h | -v } [project_name] { -c | -e | -r | -d | -f / -u }
                   avrpt { --monitor | --help | --version } [project_name] { --create | --edit | --remove | --debug / --compile | --flash / --upload }

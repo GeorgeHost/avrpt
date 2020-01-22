@@ -1,0 +1,508 @@
+#!/bin/bash
+##
+## NAME:            AVR Project Tool
+##
+## DESCRIPTION:     avrpt is organizing Arduino Uno Projects
+##
+## AUTHOR:          George Host - ghost.mobilphone@gmail.com
+##
+## DATE:            01-19-20	20.53.00
+##
+## VERSION:         0.9.95
+##
+## USAGE:           avrpt { -m | -h | -v } [project_name] { -c | -e | -r | -d | -f / -u }
+##                  avrpt { --monitor | --help | --version } [project_name] { --create | --edit | --remove | --debug / --compile | --flash / --upload }
+##
+
+function init_setup(){
+    ## Variable Definition
+    
+    # echo " DEBUG>  declare some Variables..."
+    STITLE="\e[93m AVR pt> \e[39m"
+    SERROR="\e[31mERROR\e[39m:  "
+    SBREAK="\e[31mBREAK\e[39m."
+    SWORK="\e[94mWORK\e[39m:  "
+    SDONE="\e[92mDONE\e[39m."
+    STIT="AVR Project Tool"
+    SVERSION="0.9.95"
+    PPATH="sketchbook"
+    SCOMPILER="Makefile"
+    SFORMAT=".ino"
+    BTYPE="uno"
+    SUUSER=$(whoami)
+    USER=$(whoami)
+    # echo " DEBUG>  done."
+}
+
+init_setup
+
+    ## Store Project Name
+    
+    # echo " DEBUG>  setting Project-Names..."
+    cd ~
+    touch prj.names
+    # echo $1 >> prj.names
+    echo $1 > ~/prj.names
+    PNAME=$(cat ~/prj.names)
+    SFILE=$PNAME$SFORMAT
+    export PNAME
+    export SFILE
+    # echo " DEBUG>  ! directory: "$PNAME
+    # echo " DEBUG>  ! file     : "$SFILE
+    # echo " DEBUG>  remove temporary .names-File..."
+    rm ~/prj.names
+    # echo " DEBUG>  done."
+
+function show_help(){
+        # echo " DEBUG>  show the HELP"
+echo "$STIT alias avrpt V$SVERSION"
+echo "  programed by George Host - ghost.mobilphone@gmail.com"
+echo "(c) 2020 George Host"
+echo ""
+echo " This Program is written for the 'Arduino UNO' or 'Arduino Genuino' Board with the 'Atmel ATMega 328p' Microprocessor."
+echo " It make the Work with my Uno easier when i work with the Terminal."
+echo ""
+echo " !WARNING!            I give you not a Garantee it is working perfect. You use it on your own Risk!"
+echo "-----------           as my Computer it is working fine"
+echo ""
+echo "SHORT USAGE: avrpt { -m | -h | -v } | project-name { -c | -e | -r | -d | -f }"
+echo ""
+echo " LONG USAGE: avrpt { --monitor | --help | --version } | project-name { --create | --edit | --remove | --debug | --flash }"
+echo ""
+echo ""
+echo " !INFORMATION!        never start this Program with Superuser (root) Permissions."
+echo "                      It is changing the Permissions self when its need to be Root-Acess."
+echo ""
+echo "'project_name'        is the Name for your Project and Main-Script"
+echo "                      for Example use 'hello_world' as PROJECT_NAME"
+echo "              !NOTE!  please only use 'lower-cases' and 'underlines' for your PROJECT_NAME"
+echo "                      like 'my_first_sketch' or so"
+echo ""
+echo "-m OR --monitor       is show you the Serial-Output when your Arduino is connected"
+echo "                      this is using the 'screen' Command to show you the Output from Arduino"
+echo ""
+echo "-h OR --help  		show you this Screen here"
+echo ""
+echo "-v OR --version       show you the actual Versionnumber of this Program"
+echo "              !NOTE!  when u use the short usage will only Output the Number"
+echo ""
+echo "-c OR --create        will start a new Project and create the needed Directorys and other Files"
+echo ""
+echo "-e OR --edit          open the your Script in the 'NANO'-Editor"
+echo "              !NOTE!  you can not edit the Example-File 'hello_world'"
+echo "                      but the Program will show you what is written inside"
+echo ""
+echo "-r OR --remove        is normaly the last Option when you finished all your Work"
+echo "                      it removes your Project from the Computer and delete the Directorys and Files"
+echo ""
+echo "-d OR --debug         this Option is debugging your Script inside the Mainfile and complete compiling"
+echo "                      the Code. It use 'Arduino-mk' to create all needed Files and Bootloader for your Arduino"
+echo "              !NOTE!  you can change the Syntax and use '--compile' as --debug. It means the same"
+echo ""
+echo "-f OR --flash         will flash your compiled Program into your connected Arduino and cleanup the"
+echo "                      debugged files from your Project-Folder automaticly"
+echo "              !NOTE!  you can change the Syntax and use '-u' as -f or '--upload' as --flash. It means the same"
+echo ""
+echo "I hope you enjoy. :)"
+echo ""
+exit
+        # echo " DEBUG>  done."
+}
+    
+function create_makefile(){
+    ## create Makefile for Compiler
+    
+    # echo " DEBUG>  create Makefile..."
+    cat <<\EOF > /home/$USER/$PPATH/$SCOMPILER
+ARDUINO_DIR = /usr/share/arduino
+ARDUINO_PORT = /dev/ttyACM*
+
+EOF
+    echo USER_LIB_PATH = /home/$USER/$PPATH/libraries >> /home/$USER/$PPATH/$SCOMPILER
+    echo BOARD_TAG = $BTYPE >> /home/$USER/$PPATH/$SCOMPILER
+    echo >> /home/$USER/$PPATH/$SCOMPILER
+    echo include /usr/share/arduino/Arduino.mk >> /home/$USER/$PPATH/$SCOMPILER
+    
+    # echo " DEBUG>  done."
+}
+
+function create_scriptfile(){
+    ## create empty Script
+    
+    # echo " DEBUG>  create MAIN-Scriptfile..."
+    cat <<\EOF > ~/$PPATH/$PNAME/$SFILE
+/* +++ GENERAL INFO +++
+ * title    :   NEW BLANK PROJECT
+ * version  :   0.1
+ * author   :   AUTHOR NAME
+ * mail     :   AUTHOR MAIL
+ * web      :
+ * date     :   MM-DD-YYYY
+ * copyright:   (c) YYYY AUTHOR NAME
+ */
+ 
+void setup() {
+ // ON RESET
+}
+ 
+void loop() {
+ // RUN
+}
+EOF
+    # echo " DEBUG>  done."
+}
+
+function create_folder(){
+    ## create Project-create_folder
+    
+    # echo " DEBUG>  create Project-Folder..."
+    mkdir ~/$PPATH/$PNAME
+    # echo " DEBUG>  done."
+    
+}
+
+function create_project(){
+    ## Begin a new Project
+    
+    # echo " DEBUG>  create Project..."
+    create_folder
+    create_makefile
+    create_scriptfile
+    cp ~/$PPATH/$SCOMPILER ~/$PPATH/$PNAME/$SCOMPILER
+    # echo " DEBUG>  finish."
+}
+
+function remove_project(){
+    ## Delete an existing Project
+    
+    # echo " DEBUG>  remove Project..."
+    cd ~/$PPATH/$PNAME
+    rm ~/$PPATH/$PNAME/Makefile
+    rm ~/$PPATH/$PNAME/$SFILE
+    rm ~/$PPATH/$PNAME/main.ino
+    rmdir ~/$PPATH/$PNAME
+    # echo " DEBUG>  done."
+}
+
+function edit_project(){
+    ## Editing the new Project
+    
+    # echo " DEBUG>  edit the Project..."
+    cd ~/$PPATH/$PNAME
+    nano ~/$PPATH/$PNAME/$SFILE
+    # echo " DEBUG>  done."
+}
+
+function create_example(){
+    ## Create HELLO_WORLD example
+    
+    # echo " DEBUG>  write HELLO_WORLD example..."
+    cat <<\EOF > ~/$PPATH/hello_world/main.ino
+/* +++ GENERAL INFO +++
+ * title    :   Hello World - Example
+ * version  :   1.0
+ * author   :   George Host
+ * mail     :   ghost.mobilphone@gmail.com
+ * web      :
+ * date     :   01-20-2020
+ * copyright:   (c) 2020 George Host
+ */
+ 
+ // INIT
+ int DEFPIN = 13;
+ #define DELAY 1000
+ #define BAUD 9600
+ 
+void setup() {
+ // ON RESET
+ pinMode(DEFPIN, OUTPUT);
+ Serial.begin(BAUD);
+ 
+ Serial.println("");
+ Serial.println(" AVRPT-Example: Hello_World.C");
+ Serial.println("------------------------------");
+ Serial.println("");
+}
+ 
+void loop() {
+ // RUN
+ Serial.println("");
+ Serial.print(" AVR pt> WORK:  turn the LED on Port: ");
+ Serial.print(DEFPIN);
+ Serial.print(" on.");
+    digitalWrite(DEFPIN, HIGH);
+ Serial.println("               LED is ON !");
+ Serial.println(" AVR pt> DONE.");
+ 
+ delay(DELAY);
+ 
+ Serial.println("");
+ Serial.print(" AVR pt> WORK:  turn the LED on Port: ");
+ Serial.print(DEFPIN);
+ Serial.print(" off.");
+    digitalWrite(DEFPIN, LOW);
+ Serial.println("               LED is OFF !");
+ Serial.println(" AVR pt> DONE.");
+ 
+ delay(DELAY);
+}
+EOF
+    # echo " DEBUG>  done."
+}
+
+function do_example(){
+    ## HELLO_WORLD ROUTINE
+    
+    # echo " DEBUG>  !START HELLO_WORLD Routine..."
+    echo -e $STITLE$SWORK"create HELLO_WORLD example..."
+    create_folder
+    create_makefile
+    cp ~/$PPATH/$SCOMPILER ~/$PPATH/$PNAME/$SCOMPILER
+    create_example
+    echo -e $STITLE$SDONE
+    # echo " DEBUG>  done."
+}
+
+## CHECK PERMISSIONS AND SYNTAX
+    # echo " DEBUG>  !check User permissions..."
+if [ "$SUUSER" != "root" ]; then
+        
+    ## SYNTAX CHECK
+    
+    ## NO ARGUMENTS ?!?
+        # echo " DEBUG>  !check Syntax..."
+    if [ "$1" = "" ]; then
+        echo -e $STITLE$SERROR"Project-Name is empty!"
+        echo -e "                See Help for Informations about Syntax."
+        exit 1
+    
+    ## MONITOR ROUTINE
+    elif [ "$1" = "-m" ] || [ "$1" = "--monitor" ]; then
+        # echo " DEBUG>  !Syntax was MONITOR"
+        if [ ! -e /dev/ttyACM* ]; then
+            echo -e $STITLE$SERROR"Cannot find the Hardware!"
+            echo -e "                Maybe your Arduino is not connected."
+            echo -e $STITLE$SBREAK
+            exit 1
+        else
+            echo -e  $STITLE$SWORK"connecting Arduino..."
+            sleep 0.5
+            echo -e $STITLE"      Use Ctrl+A + Ctrl+D to detach the monitor."
+            sleep 5
+            echo -e $STITLE$SWORK"get Super-User Permissions..."
+            sudo screen /dev/ttyACM*
+            process_id=$!
+            wait $process_id
+            wait $!
+            echo -e $STITLE$SDONE
+            echo -e  $STITLE$SWORK"disconnecting the Monitor..."
+            sudo screen -X quit &
+            process_id=$!
+            wait $process_id
+            wait $!
+            echo -e $STITLE$SDONE
+            exit 0
+        fi
+    
+    ## SHOW VERSION NUMBER
+    elif [ "$1" = "-v" ]; then
+        # echo " DEBUG>  !Syntax was VERSION"
+        echo $SVERSION
+        exit 0
+    elif [ "$1" = "--version" ]; then
+        # echo " DEBUG>  !Syntax was VERSION"
+        echo -e $STITLE"VERSION:  "$SVERSION
+        echo -e $STITLE$SDONE
+        exit 0
+    
+    ## GET HELP INSTRUCTIONS
+    elif [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+        # echo " DEBUG>  !Syntax was HELP"
+        show_help
+        exit 0
+    
+    ## CHECK FOR OPTIONS
+    elif [ "$2" = "" ]; then
+        # echo " DEBUG>  !Syntax was without OPTIONS"
+        echo -e $STITLE$SERROR"no Options for '\e[97m"$1"\e[39m' found!"
+        echo -e "                See Help for Informations about Syntax."
+        exit 1
+    
+    ## CREATE A PROJECT
+    elif [ "$2" = "-c" ] || [ "$2" = "--create" ]; then
+        # echo " DEBUG>  !Syntax OK. Option CREATE"
+        if [ "$1" = "hello_world" ]; then
+            if [ -d ~/$PPATH/hello_world ]; then
+                cd ~/$PPATH/hello_world 
+                rm ~/$PPATH/hello_world/main.ino 
+                rm ~/$PPATH/hello_world/Makefile 
+                rmdir ~/$PPATH/hello_world 
+                do_example
+            else
+                do_example
+                exit 0
+            fi
+        
+        else
+    
+            if [ -d ~/$PPATH/$1 ]; then 
+                echo -e $STITLE$SERROR"the Project '\e[97m"$1"\e[39m' already exist!"
+                exit 2
+            else
+                echo -e $STITLE$SWORK"create new Project: '\e[97m"$1"\e[39m'..."
+                create_project
+                echo -e $STITLE$SDONE
+                exit 0
+            fi
+        fi
+    
+    ## EDIT A PROJECT
+    elif [ "$2" = "-e" ] || [ "$2" = "--edit" ]; then
+    # echo " DEBUG>  !Syntax OK. Option EDIT"
+        if [ ! -d ~/$PPATH/$1 ]; then
+            echo -e $STITLE$SERROR"Cannot find '\e[97m"$1"\e[39m' Poject!"
+            exit 2
+        else
+            if [ "$1" = "hello_world" ]; then
+                echo -e $STITLE$SERROR"Cannot edit the Example."
+                echo -e $STITLE$SWORK"i show you the Example..."
+                cat ~/$PPATH/hello_world/main.ino
+                echo -e $STITLE$SDONE
+                exit 0
+            else
+                echo -e $STITLE$SWORK"edit Project: '\e[97m"$1"\e[39m'..."
+                edit_project
+                echo -e $STITLE$SDONE
+                exit 0
+            fi
+        fi
+    
+    ## REMOVE A PROJECT
+    elif [ "$2" = "-r" ] || [ "$2" = "--remove" ]; then
+        # echo " DEBUG>  !Syntax OK. Option REMOVE"
+        if [ ! -d ~/$PPATH/$1 ]; then
+            echo -e $STITLE$SERROR"Cannot find '\e[97m"$1"\e[39m' Poject!"
+            exit 2
+        else
+            echo -e $STITLE$SWORK"remove Project: '\e[97m"$1"\e[39m'..."
+            remove_project
+            echo -e $STITLE$SDONE
+            exit 0
+        fi
+    
+    ## COMPILE A PROJECT
+    elif [ "$2" = "-d" ] || [ "$2" = "--debug" ] || [ "$2" = "--compile" ]; then
+        # echo " DEBUG>  !Syntax OK. Options COMPILE"
+        if [ ! -d ~/$PPATH/$1 ]; then
+            echo -e $STITLE$SERROR"Cannot find '\e[97m"$1"\e[39m' Poject!"
+            exit 2
+        else
+            echo -e $STITLE$SWORK"open Project-Folder..."
+            cd ~/$PPATH/$1
+            echo -e $STITLE$SDONE
+            echo -e $STITLE$SWORK"search for Project-Files..."
+            if [ ! -e ~/$PPATH/$1/Makefile ]; then
+                echo -e $STITLE$SERROR"Cannot find Makefile!"
+                echo -e "                Maybe your Project is broken."
+                echo -e $STITLE$SBREAK
+                exit 1
+            elif [ ! -e ~/$PPATH/$1/*$SFORMAT ]; then
+                echo -e $STITLE$SERROR"Cannot find Mainfile!"
+                echo -e "                Maybe your Project is broken."
+                echo -e $STITLE$SBREAK
+                exit 1
+            else
+                echo -e $STITLE$SDONE
+                echo -e $STITLE"      Project-Files found."
+                echo -e $STITLE$SWORK"get Super-User Permissions..."
+                sudo make &
+                process_id=$!
+                wait $process_id
+                wait $!
+                echo -e $STITLE"      your Project is sucessful compiled. Thank you."
+                echo -e $STITLE$SDONE
+                exit 0
+            fi
+            echo -e $STITLE$SDONE
+            exit 0
+        fi
+    
+    ## UPLOAD A PROJECT
+    elif [ "$2" = "-f" ] || [ "$2" = "-u" ] || [ "$2" = "--flash" ] || [ "$2" = "--upload" ]; then
+        # echo " DEBUG>  !Syntax OK. Options UPLOAD"
+        if [ ! -d ~/$PPATH/$1/build-uno ]; then
+            echo -e $STITLE$SERROR"Cannot find '\e[97m"$1"\e[39m' Poject!"
+            echo -e $STITLE$SERROR"Cannot find '\e[97m"DEBUG-Files"\e[39m'!"
+            echo -e "                Maybe Project '\e[97m"$1"\e[39m' is not debuged or exist."
+            echo -e $STITLE$SBREAK
+            exit 2
+        else
+            echo -e $STITLE$SWORK"open DEBUG-Folder..."
+            cd ~/$PPATH/$1/build-uno
+            echo -e $STITLE$SDONE
+            echo -e $STITLE$SWORK"search for Project-Files..."
+            if [ ! -e ~/$PPATH/$1/build-uno/$1.hex ]; then
+                echo -e $STITLE$SERROR"Cannot find HEX-File!"
+                echo -e "                Maybe your Project is broken."
+                echo -e $STITLE$SBREAK
+                exit 1
+            elif [ ! -e /dev/ttyACM* ]; then
+                echo -e $STITLE$SDONE
+                echo -e $STITLE"      Debug-Files found."
+                echo -e $STITLE$SERROR"Cannot find the Hardware!"
+                echo -e "                Maybe your Arduino is not connected."
+                echo -e $STITLE$SBREAK
+                exit 1
+            else
+                echo -e $STITLE$SDONE
+                echo -e $STITLE"      Debug-Files found."
+                echo -e $STITLE"      Arduino found."
+                echo -e $STITLE$SWORK"begin flashing..."
+                echo -e $STITLE$SWORK"get Super-User Permissions..."
+                cd ~/$PPATH/$1
+                sudo make upload &
+                process_id=$!
+                wait $process_id
+                wait $!
+                echo -e $STITLE$SWORK"cleanup Project-Folder..."
+                sudo make clean &
+                process_id=$!
+                wait $process_id
+                wait $!
+                echo -e $STITLE$SDONE
+                echo -e $STITLE"      your Project is sucessful flashed. Thank you."
+                echo -e $STITLE$SDONE
+                exit 0
+            fi
+        fi
+            
+    else
+    ## UNKNOWN ERRORS FOUND
+        # echo " DEBUG>  !ERROR!"
+        # echo " DEBUG>  Unknown Error EC=1"
+        echo -e $STITLE$SERROR"Program crashed!"
+        echo -e "                See the Log for more Informations about this."
+        echo -e $STITLE$SBREAK
+        exit 1
+    fi
+    
+## NEVER START WITH SUDO!!!
+elif [ "$SUUSER" = "root" ]; then
+        # echo " DEBUG>  !ERROR!"
+        # echo " DEBUG>  Never use SUDO here"
+    echo -e $STITLE$SERROR"you can not start AVR-pt with Super-User Permissions."
+    echo -e "                See Help for Informations about Syntax."
+    echo -e $STITLE$SBREAK
+    exit 2
+
+## UNKNOWN ERRORS FOUND
+else
+        # echo " DEBUG>  !ERROR!"
+        # echo " DEBUG>  Unknown Error EC=1"
+    echo -e $STITLE$SERROR"Program crashed!"
+    echo -e "                See the Log for more Informations about this."
+    echo -e $STITLE$SBREAK
+    exit 1
+	
+fi
+    # echo " DEBUG>  done."
